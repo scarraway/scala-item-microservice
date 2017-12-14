@@ -18,8 +18,10 @@ libraryDependencies ++= {
     "com.typesafe.akka" %% "akka-http" % akkaHttpV,
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
     "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV,
-    "org.scalatest"     %% "scalatest" % scalaTestV % "test"
+    "org.scalatest"     %% "scalatest" % scalaTestV % "test",
+    "org.mongodb.scala" %% "mongo-scala-driver" % "2.1.0",
+  // https://mvnrepository.com/artifact/ch.megard/akka-http-cors
+    "ch.megard" %% "akka-http-cors" % "0.2.2"
   )
 }
-
 Revolver.settings
