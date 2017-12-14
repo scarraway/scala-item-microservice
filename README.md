@@ -69,3 +69,16 @@ minikube service item-service
 Updating the deployed image
 1. rebuild docker image -> ```build -t item-service:v2 .```
 2. set image for kube node ->``` kubectl set image deployment/item-service item-service=item-service:v2```
+
+
+### Deploying the mongo service to your Kube node
+Inspired by this article
+
+https://developer.ibm.com/recipes/tutorials/kubernetes-how-to-run-a-node-js-application-which-accesses-mongo-database-where-both-are-running-in-containers-in-different-pods/
+
+Run the following commands (I've provided the yaml files in the repo)
+```
+kubectl create -f mongo-container/mongo-pod.yaml
+kubectl create -f mongo-container/mongoDeploy.yaml
+
+```
