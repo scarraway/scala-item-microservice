@@ -29,6 +29,8 @@ MIT license.
 
 
 ### Building the container for local minikube
+Installing minikube: https://kubernetes.io/docs/getting-started-guides/minikube/
+
 Setup docker env
 ```
 eval $(minikube-docker-env)
