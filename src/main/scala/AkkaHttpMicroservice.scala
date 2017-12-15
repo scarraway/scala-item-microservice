@@ -1,5 +1,5 @@
 import akka.actor.ActorSystem
-import akka.http.scaladsl.server.{Directives, PathMatchers}
+import akka.http.scaladsl.server.{Directives, PathMatchers, Route, RouteResult}
 import akka.event.{Logging, LoggingAdapter}
 import akka.http.scaladsl.Http
 import akka.stream.{ActorMaterializer, Materializer}
@@ -74,32 +74,36 @@ trait Service  extends Directives with JsonSupport {
           }
       } ~
       pathPrefix("items" / PathMatchers.RemainingPath) { id =>
-        get {
-          val possibleItem = getItem(id.toString())
-          onSuccess(possibleItem) {
-            case Some(item) => complete(item)
-            case None => complete(StatusCodes.NotFound)
-          }
-        } ~
-        delete {
-          val possibleDeletion:Future[Item] = deleteItem(id.toString())
-          onComplete(possibleDeletion){ deletionResult =>
-            complete(deletionResult)
-          }
+        val possibleItem = getItem(id.toString())
+        onSuccess(possibleItem) {
+          case Some(item) => specificItemRoutes(item)
+          case None => complete(StatusCodes.NotFound)
+        }
+      }
+    }
+  }
 
-        } ~
-        put {
-          decodeRequest {
-            entity(as[ItemNameUpdate]) { itemNameUpdate =>
-              val possibleUpdate:Future[Item] = updateItem(id.toString(), itemNameUpdate.name)
-              onComplete(possibleUpdate){ updateResult =>
-                complete(updateResult)
-              }
+  private def specificItemRoutes(item: Item): Route = {
+    get {
+      complete(item)
+    } ~
+      delete {
+        val possibleDeletion:Future[Item] = deleteItem(item._id.get)
+        onComplete(possibleDeletion){ deletionResult =>
+          complete(deletionResult)
+        }
+
+      } ~
+      put {
+        decodeRequest {
+          entity(as[ItemNameUpdate]) { itemNameUpdate =>
+            val possibleUpdate:Future[Item] = updateItem(item._id.get, itemNameUpdate.name)
+            onComplete(possibleUpdate){ updateResult =>
+              complete(updateResult)
             }
           }
         }
       }
-    }
   }
 
   private def addMissingIdsToItemList(itemList: List[Item]) = {
